@@ -19,7 +19,9 @@ pluggy==1.6.0
 psycopg==3.3.2
 psycopg-binary==3.3.2
 psycopg2==2.9.11
+py4j==0.10.9.9
 Pygments==2.19.2
+pyspark==4.1.1
 pytest==9.0.2
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.1

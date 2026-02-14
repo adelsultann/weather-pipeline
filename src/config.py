@@ -4,7 +4,13 @@ from dataclasses import dataclass
 from dotenv import load_dotenv
 
 load_dotenv()  # reads .env locally
+load_dotenv(".env.docker") # try .env.docker if .env is missing
 
+
+# dataclass is built in python module that helps you create class without the boilerplate
+# code like __init__ and __repr__
+
+# frozen=True makes the class immutable
 @dataclass(frozen=True)
 class PostgresConfig:
     host: str

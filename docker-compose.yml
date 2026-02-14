@@ -28,5 +28,35 @@ services:
     depends_on:
       - postgres
 
+  # two spark images are used for spark master and spark worker 
+  # spark mater is the brain it manager the tasks and spark worker is the one who execute the tasks 
+  # if you we have millions of rows we would add more spark workers to handle 
+  spark:
+    image: public.ecr.aws/bitnami/spark:3.5.0
+    container_name: weather_spark
+    environment:
+      - SPARK_MODE=master
+    volumes:
+      - ./src:/opt/app/src
+      - ./sql:/opt/app/sql
+      - ./jars:/opt/app/jars
+      - ./requirements.txt:/opt/app/requirements.txt
+      - ./.env.docker:/opt/app/.env.docker
+    working_dir: /opt/app
+    depends_on:
+      - postgres
+
+  spark-worker:
+    image: public.ecr.aws/bitnami/spark:3.5.0
+    container_name: weather_spark_worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+    depends_on:
+      - spark
+
 volumes:
   pgdata:
+  airflow-db_data:
+
+
