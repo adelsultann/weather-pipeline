@@ -2,8 +2,9 @@ from __future__ import annotations
 import json
 import psycopg
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, from_json, explode, to_timestamp, to_date, hour, dayofweek, month, year, lit
+from pyspark.sql.functions import col, from_json, explode, to_timestamp, to_date, hour, dayofweek, month, year, lit, row_number, desc
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType, ArrayType, IntegerType
+from pyspark.sql.window import Window
 
 from src.config import get_postgres_config
 
@@ -78,6 +79,11 @@ def main() -> None:
         col("codes")[col("pos")].alias("weathercode"),
         col("fetched_at_utc"),
     )
+
+    # 3.1) Deduplicate fact table to ensure one row per (location, ts_utc)
+    # This prevents the Postgres MERGE error: "more than one source row matches any one target row"
+    window_spec = Window.partitionBy("latitude", "longitude", "ts_utc").orderBy(desc("fetched_at_utc"))
+    fact = fact.withColumn("rn", row_number().over(window_spec)).where(col("rn") == 1).drop("rn")
 
     # 4) Build staging dims
     stg_location = fact.select("latitude", "longitude", "timezone").distinct()

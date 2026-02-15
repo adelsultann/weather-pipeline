@@ -3,7 +3,8 @@ from __future__ import annotations
 import argparse
 from src.config import get_postgres_config
 from src.extract.open_meteo import fetch_hourly_forecast
-from load.postgres_raw import insert_raw_payload
+from src.load.postgres_raw import insert_raw_payload
+
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--lat", type=float, required=True)
