@@ -18,6 +18,29 @@ def run_merge_sql(pg) -> None:
                 cur.execute(f.read())
         conn.commit()
 
+
+
+def get_last_raw_id(pg) -> int:
+    conn_str = f"host={pg.host} port={pg.port} dbname={pg.db} user={pg.user} password={pg.password}"
+    with psycopg.connect(conn_str) as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT last_raw_id FROM dw.etl_state WHERE pipeline_name='weather_hourly'")
+            return int(cur.fetchone()[0])
+
+def set_last_raw_id(pg, new_last_id: int) -> None:
+    conn_str = f"host={pg.host} port={pg.port} dbname={pg.db} user={pg.user} password={pg.password}"
+    with psycopg.connect(conn_str) as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE dw.etl_state
+                SET last_raw_id = %s, updated_at = now()
+                WHERE pipeline_name='weather_hourly'
+                """,
+                (new_last_id,),
+            )
+        conn.commit()
+
 def main() -> None:
     pg = get_postgres_config()
     jdbc_url = f"jdbc:postgresql://{pg.host}:{pg.port}/{pg.db}"
