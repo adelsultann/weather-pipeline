@@ -19,6 +19,9 @@ def run_merge_sql(pg) -> None:
         conn.commit()
 
 
+# this two function is for the incremental load
+# we get the last raw id from the etl_state table and then we read the raw table from that id to the end
+# and then we update the last raw id to the new last id
 
 def get_last_raw_id(pg) -> int:
     conn_str = f"host={pg.host} port={pg.port} dbname={pg.db} user={pg.user} password={pg.password}"
@@ -54,16 +57,26 @@ def main() -> None:
     )
 
     # 1) Read raw table (payload is JSONB -> comes as string via JDBC)
-    raw_df = (
-        spark.read.format("jdbc")
-        .option("url", jdbc_url)
-        .option("dbtable", RAW_TABLE)
-        .option("user", pg.user)
-        .option("password", pg.password)
-        .option("driver", "org.postgresql.Driver")
-        .load()
-        .select("latitude", "longitude", "timezone", "fetched_at_utc", col("payload").cast("string").alias("payload_str"))
-    )
+    last_id = get_last_raw_id(pg)
+
+raw_df = (
+    spark.read.format("jdbc")
+    .option("url", jdbc_url)
+    .option("dbtable", RAW_TABLE)
+    .option("user", pg.user)
+    .option("password", pg.password)
+    .option("driver", "org.postgresql.Driver")
+    .load()
+    # select the id column to use it for the incremental load
+    .select("id", "latitude", "longitude", "timezone", "fetched_at_utc", col("payload").cast("string").alias("payload_str"))
+    # filter the raw table to get only the new rows
+    .where(col("id") > lit(last_id))
+)
+
+if raw_df.rdd.isEmpty():
+    print(f"No new raw rows to process (last_raw_id={last_id}).")
+    spark.stop()
+    return
 
     # 2) Define the subset of Open-Meteo schema we use
     hourly_schema = StructType([
