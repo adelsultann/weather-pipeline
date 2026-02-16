@@ -12,6 +12,7 @@ def insert_raw_payload(
     longitude: float,
     timezone: str,
     payload: Dict[str, Any],
+    table_name: str = "raw.open_meteo_hourly"
 ) -> int:
 
     # create connection string using f-string using the class attributes in the PostgresConfig class 
@@ -21,10 +22,10 @@ def insert_raw_payload(
 
         # post the payload to the database in the raw.open_meteo_hourly table
         with conn.cursor() as cur:
-            print(f"Inserting raw payload for lat={latitude}, lon={longitude}...")
+            print(f"Inserting raw payload into {table_name} for lat={latitude}, lon={longitude}...")
             cur.execute(
-                """
-                INSERT INTO raw.open_meteo_hourly (latitude, longitude, timezone, payload)
+                f"""
+                INSERT INTO {table_name} (latitude, longitude, timezone, payload)
                 VALUES (%s, %s, %s, %s::jsonb)
                 RETURNING id;
                 """,
