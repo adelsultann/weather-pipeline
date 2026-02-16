@@ -59,24 +59,24 @@ def main() -> None:
     # 1) Read raw table (payload is JSONB -> comes as string via JDBC)
     last_id = get_last_raw_id(pg)
 
-raw_df = (
-    spark.read.format("jdbc")
-    .option("url", jdbc_url)
-    .option("dbtable", RAW_TABLE)
-    .option("user", pg.user)
-    .option("password", pg.password)
-    .option("driver", "org.postgresql.Driver")
-    .load()
-    # select the id column to use it for the incremental load
-    .select("id", "latitude", "longitude", "timezone", "fetched_at_utc", col("payload").cast("string").alias("payload_str"))
-    # filter the raw table to get only the new rows
-    .where(col("id") > lit(last_id))
-)
+    raw_df = (
+        spark.read.format("jdbc")
+        .option("url", jdbc_url)
+        .option("dbtable", RAW_TABLE)
+        .option("user", pg.user)
+        .option("password", pg.password)
+        .option("driver", "org.postgresql.Driver")
+        .load()
+        # select the id column to use it for the incremental load
+        .select("id", "latitude", "longitude", "timezone", "fetched_at_utc", col("payload").cast("string").alias("payload_str"))
+        # filter the raw table to get only the new rows
+        .where(col("id") > lit(last_id))
+    )
 
-if raw_df.rdd.isEmpty():
-    print(f"No new raw rows to process (last_raw_id={last_id}).")
-    spark.stop()
-    return
+    if raw_df.rdd.isEmpty():
+        print(f"No new raw rows to process (last_raw_id={last_id}).")
+        spark.stop()
+        return
 
     # 2) Define the subset of Open-Meteo schema we use
     hourly_schema = StructType([
@@ -149,11 +149,17 @@ if raw_df.rdd.isEmpty():
      .option("user", pg.user).option("password", pg.password).option("driver", "org.postgresql.Driver")
      .mode("overwrite").save())
 
-    spark.stop()
-
     # 6) Upsert into DW using Postgres MERGE
     run_merge_sql(pg)
+
+    # 7) Update the last raw id to the new last id
+    max_id = raw_df.agg({"id": "max"}).collect()[0][0]
+    if max_id:
+        set_last_raw_id(pg, max_id)
+        print(f"Incremental update: last_raw_id set to {max_id}")
+
     print("Spark transform complete + MERGE applied.")
+    spark.stop()
 
 if __name__ == "__main__":
     main()
