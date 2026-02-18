@@ -1,4 +1,3 @@
-````markdown
 # Weather Data Pipeline (Open-Meteo → Spark → PostgreSQL → Airflow → Power BI)
 
 An end-to-end data engineering project that ingests **free weather + air quality data** from **Open-Meteo** (no API key), stores raw JSON in PostgreSQL, transforms it with **Apache Spark**, loads a **star schema** into a data warehouse (`dw`), orchestrates runs with **Apache Airflow**, and powers a **Power BI dashboard**.
@@ -49,6 +48,7 @@ An end-to-end data engineering project that ingests **free weather + air quality
 5. **Consume** (Power BI)  
    Connect to Postgres, load `dw.v_*` views, build dashboard.
 
+![Weather Dashboard](https://raw.githubusercontent.com/adelsultann/weather-pipeline/main/report_power_bi/assets/Screenshot.png)
 ---
 
 ## Repository structure
@@ -122,7 +122,7 @@ Copy and edit:
 cp .env.example .env
 ```
 
-Example `.env` (adjust if needed):
+Example `.env` 
 
 ```env
 POSTGRES_HOST=weather_postgres
@@ -359,6 +359,5 @@ If data exists, the issue is usually timestamp equality filtering. Use `TOPN(1, 
 
 ```
 
-If you paste your **actual docker-compose.yml** and your **real folder tree**, I’ll align the README so every path/command matches your repo exactly (no “almost correct” docs).
-::contentReference[oaicite:0]{index=0}
+
 ```
