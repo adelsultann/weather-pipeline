@@ -50,8 +50,7 @@ An end-to-end data engineering project that ingests **free weather + air quality
 
 
 
-![Weather Data Pipeline Architecture](https://github.com/adelsultann/weather-pipeline/edit/main/screenshot.png)
----
+![Weather Data Pipeline Architecture](https://raw.githubusercontent.com/adelsultann/weather-pipeline/report_power_bi/assets/Screenshot.png)---
 
 ## Repository structure
 
