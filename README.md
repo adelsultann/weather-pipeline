@@ -49,6 +49,7 @@ An end-to-end data engineering project that ingests **free weather + air quality
 5. **Consume** (Power BI)  
    Connect to Postgres, load `dw.v_*` views, build dashboard.
 
+---
 
 ## Repository structure
 
@@ -79,7 +80,7 @@ weather-pipeline/
 ├─ .env.example
 ├─ requirements.txt
 └─ README.md
-
+````
 
 ---
 
@@ -121,7 +122,7 @@ Copy and edit:
 cp .env.example .env
 ```
 
-Example `.env` 
+Example `.env` (adjust if needed):
 
 ```env
 POSTGRES_HOST=weather_postgres
@@ -358,5 +359,6 @@ If data exists, the issue is usually timestamp equality filtering. Use `TOPN(1, 
 
 ```
 
-
+If you paste your **actual docker-compose.yml** and your **real folder tree**, I’ll align the README so every path/command matches your repo exactly (no “almost correct” docs).
+::contentReference[oaicite:0]{index=0}
 ```
