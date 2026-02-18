@@ -48,8 +48,9 @@ An end-to-end data engineering project that ingests **free weather + air quality
 5. **Consume** (Power BI)  
    Connect to Postgres, load `dw.v_*` views, build dashboard.
 
-   
-![img](https://github.com/adelsultann/weather-pipeline/edit/main/screenshot.png)
+
+
+![Weather Data Pipeline Architecture](https://github.com/adelsultann/weather-pipeline/edit/main/screenshot.png)
 ---
 
 ## Repository structure
