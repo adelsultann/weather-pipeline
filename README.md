@@ -1,6 +1,6 @@
 # Weather Data Pipeline (Open-Meteo → Spark → PostgreSQL → Airflow → Power BI)
 
-An end-to-end data engineering project that ingests **free weather + air quality data** from **Open-Meteo** (no API key), stores raw JSON in PostgreSQL, transforms it with **Apache Spark**, loads a **star schema** into a data warehouse (`dw`), orchestrates runs with **Apache Airflow**, and powers a **Power BI dashboard**.
+ end-to-end data engineering project that ingests **free weather + air quality data** from **Open-Meteo** (no API key), stores raw JSON in PostgreSQL, transforms it with **Apache Spark**, loads a **star schema** into a data warehouse (`dw`), orchestrates runs with **Apache Airflow**, and powers a **Power BI dashboard**.
 
 ---
 
