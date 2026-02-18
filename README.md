@@ -122,7 +122,7 @@ Copy and edit:
 cp .env.example .env
 ```
 
-Example `.env` (adjust if needed):
+Example `.env` 
 
 ```env
 POSTGRES_HOST=weather_postgres
